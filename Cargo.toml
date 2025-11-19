@@ -1,0 +1,34 @@
+[package]
+name = "mk-test-lambda"
+version = "0.1.0"
+edition = "2021"
+authors = ["MiMarket Team"]
+description = "Test Rust Lambda function for MiMarket backend - Development/Testing purposes"
+
+[dependencies]
+lambda_runtime = "0.13"
+lambda_http = "0.13"
+serde = { version = "1.0", features = ["derive"] }
+serde_json = "1.0"
+tokio = { version = "1.0", features = ["full"] }
+tracing = "0.1"
+tracing-subscriber = { version = "0.3", default-features = false, features = ["fmt"] }
+anyhow = "1.0"
+chrono = { version = "0.4", features = ["serde"] }
+
+# AWS SDK dependencies
+aws-config = "1.5"
+aws-sdk-dynamodb = "1.56"
+aws-sdk-s3 = "1.63"
+aws-sdk-ses = "1.51"
+
+[dev-dependencies]
+tokio-test = "0.4"
+
+[[bin]]
+name = "bootstrap"
+path = "src/main.rs"
+
+[lib]
+name = "mk_test_lambda"
+path = "src/lib.rs"
