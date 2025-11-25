@@ -40,15 +40,63 @@ curl -X POST http://localhost:9000/lambda-url/mk-test-lambda \
 
 ## Deployment
 
-### Deploy to AWS
+### Option 1: Manual Upload (AWS Console)
+
+1. **Build the deployment package:**
+   ```bash
+   # For x86_64 architecture (most common)
+   cargo lambda build --release --x86-64
+   
+   # For ARM64 architecture (Graviton2 - more cost-effective)
+   cargo lambda build --release --arm64
+   ```
+
+2. **Create the ZIP file:**
+   ```bash
+   # x86_64
+   cd target/lambda/bootstrap && zip -j ../../../dist/lambda-x86_64.zip bootstrap && cd ../../..
+   
+   # ARM64
+   cd target/lambda/bootstrap && zip -j ../../../dist/lambda-arm64.zip bootstrap && cd ../../..
+   ```
+
+3. **Upload to AWS Lambda:**
+   - Go to your Lambda function in AWS Console
+   - Click "Upload from" → ".zip file"
+   - Select `dist/lambda-x86_64.zip` (or `dist/lambda-arm64.zip` for ARM)
+   - Click "Save"
+   - Ensure the architecture matches (x86_64 or arm64)
+
+### Option 2: AWS CLI
+
 ```bash
-cargo lambda deploy
+# Build and package
+cargo lambda build --release --x86-64
+cd target/lambda/bootstrap && zip -j ../../../dist/lambda-x86_64.zip bootstrap && cd ../../..
+
+# Update Lambda function
+aws lambda update-function-code \
+  --function-name your-lambda-name \
+  --zip-file fileb://dist/lambda-x86_64.zip
 ```
 
-### Deploy with specific configuration
+### Option 3: Direct Deploy with cargo-lambda
+
 ```bash
+cargo lambda deploy
+
+# With specific IAM role
 cargo lambda deploy --iam-role arn:aws:iam::ACCOUNT:role/lambda-execution-role
 ```
+
+### Environment Variables (Optional)
+
+Configure these in your Lambda function settings:
+
+- `DYNAMO_TABLE` - DynamoDB table name (default: `demo-table`)
+- `S3_BUCKET` - S3 bucket name (default: `demo-bucket`)
+- `RUST_LOG` - Logging level (default: `info`, options: `trace`, `debug`, `info`, `warn`, `error`)
+- `AWS_REGION` - AWS region (default: `us-east-1`)
 
 ## Architecture
 

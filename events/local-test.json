@@ -1,0 +1,34 @@
+{
+  "version": "2.0",
+  "routeKey": "POST /",
+  "rawPath": "/",
+  "rawQueryString": "",
+  "headers": {
+    "accept": "application/json",
+    "content-type": "application/json",
+    "host": "localhost:9000",
+    "user-agent": "curl/7.79.1",
+    "x-forwarded-proto": "http",
+    "x-forwarded-port": "9000"
+  },
+  "requestContext": {
+    "accountId": "123456789012",
+    "apiId": "local",
+    "domainName": "localhost:9000",
+    "domainPrefix": "localhost",
+    "http": {
+      "method": "POST",
+      "path": "/",
+      "protocol": "HTTP/1.1",
+      "sourceIp": "127.0.0.1",
+      "userAgent": "curl/7.79.1"
+    },
+    "requestId": "local-request-id",
+    "routeKey": "POST /",
+    "stage": "$default",
+    "time": "25/Nov/2025:00:00:00 +0000",
+    "timeEpoch": 1732492800000
+  },
+  "body": "{\"message\":\"Hola desde test local!\"}",
+  "isBase64Encoded": false
+}
