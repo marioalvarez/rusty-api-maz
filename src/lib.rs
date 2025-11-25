@@ -5,5 +5,6 @@
 // pub mod services;
 pub mod domain;
 pub mod infrastructure;
+pub mod application;
 
 // pub use services::AwsServices;
