@@ -1,0 +1,37 @@
+{
+  "version": "2.0",
+  "routeKey": "$default",
+  "rawPath": "/",
+  "rawQueryString": "",
+  "headers": {
+    "accept": "*/*",
+    "content-length": "70",
+    "content-type": "application/json",
+    "host": "lambda-url.us-east-1.on.aws",
+    "user-agent": "curl/8.0.1",
+    "x-amzn-trace-id": "Root=1-658a1234-5678901234567890abcdef",
+    "x-forwarded-for": "192.0.2.1",
+    "x-forwarded-port": "443",
+    "x-forwarded-proto": "https"
+  },
+  "requestContext": {
+    "accountId": "123456789012",
+    "apiId": "abcd1234",
+    "domainName": "lambda-url.us-east-1.on.aws",
+    "domainPrefix": "abcd1234",
+    "http": {
+      "method": "POST",
+      "path": "/",
+      "protocol": "HTTP/1.1",
+      "sourceIp": "192.0.2.1",
+      "userAgent": "curl/8.0.1"
+    },
+    "requestId": "abc123-def456-ghi789",
+    "routeKey": "$default",
+    "stage": "$default",
+    "time": "25/Nov/2025:15:30:00 +0000",
+    "timeEpoch": 1732550400000
+  },
+  "body": "{\"message\":\"Test desde AWS Console\",\"data\":{\"env\":\"production-test\"}}",
+  "isBase64Encoded": false
+}

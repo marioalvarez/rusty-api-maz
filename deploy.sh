@@ -3,7 +3,7 @@
 # Deployment script for Rust Lambda function
 set -e
 
-echo "🚀 Starting deployment of mk-test-lambda..."
+echo "🚀 Starting deployment of rusty-api-maz..."
 
 # Check if cargo-lambda is installed
 if ! command -v cargo-lambda &> /dev/null; then
@@ -35,5 +35,5 @@ echo "4. Test the function"
 echo ""
 echo "🔗 Useful commands:"
 echo "- Test locally: cargo lambda watch"
-echo "- View logs: aws logs tail /aws/lambda/mk-test-lambda --follow"
+echo "- View logs: aws logs tail /aws/lambda/rusty-api-maz --follow"
 echo "- Update function: cargo lambda deploy"

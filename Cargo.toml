@@ -1,9 +1,9 @@
 [package]
-name = "mk-test-lambda"
+name = "rusty-api-maz"
 version = "0.1.0"
 edition = "2021"
 authors = ["MiMarket Team"]
-description = "Test Rust Lambda function for MiMarket backend - Development/Testing purposes"
+description = "Rust Lambda API with Hexagonal Architecture - Production ready"
 
 [dependencies]
 lambda_runtime = "0.13"

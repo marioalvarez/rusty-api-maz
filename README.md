@@ -1,6 +1,6 @@
-# mk-test-lambda
+# rusty-api-maz
 
-A test AWS Lambda function written in Rust for the MiMarket backend - Development/Testing purposes.
+AWS Lambda API written in Rust with Hexagonal Architecture (Ports & Adapters) - Production ready.
 
 ## Overview
 
@@ -33,7 +33,7 @@ cargo lambda watch
 
 This will start a local server that you can test with:
 ```bash
-curl -X POST http://localhost:9000/lambda-url/mk-test-lambda \
+curl -X POST http://localhost:9000/lambda-url/rusty-api-maz \
   -H "Content-Type: application/json" \
   -d '{"message": "Hello from test!"}'
 ```
@@ -153,7 +153,7 @@ This project follows **Hexagonal Architecture (Ports & Adapters)** principles:
 ## Project Structure
 
 ```
-mk-test-lambda/
+rusty-api-maz/
 ├── Cargo.toml                  # Rust dependencies
 ├── src/
 │   ├── domain/                 # Domain layer
