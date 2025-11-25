@@ -36,7 +36,10 @@ async fn function_handler(event: Request) -> Result<Response<Body>, Error> {
 
     // Initialize AWS configuration
     let region_provider = RegionProviderChain::default_provider().or_else("us-east-1");
-    let config = aws_config::from_env().region(region_provider).load().await;
+    let config = aws_config::defaults(aws_config::BehaviorVersion::latest())
+        .region(region_provider)
+        .load()
+        .await;
 
     // Initialize Infrastructure Adapters
     let dynamo_client = DynamoClient::new(&config);

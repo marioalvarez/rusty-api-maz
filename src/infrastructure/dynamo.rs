@@ -1,7 +1,7 @@
 use crate::domain::ports::DatabasePort;
 use async_trait::async_trait;
 use aws_sdk_dynamodb::types::AttributeValue;
-use aws_sdk_dynamodb::{Client, Error};
+use aws_sdk_dynamodb::Client;
 use std::collections::HashMap;
 use std::error::Error as StdError;
 

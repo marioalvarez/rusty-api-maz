@@ -50,16 +50,82 @@ cargo lambda deploy
 cargo lambda deploy --iam-role arn:aws:iam::ACCOUNT:role/lambda-execution-role
 ```
 
+## Architecture
+
+This project follows **Hexagonal Architecture (Ports & Adapters)** principles:
+
+```
+┌─────────────────────────────────────────────────────────┐
+│                    Application Layer                    │
+│              (Business Logic / Use Cases)               │
+│                  RequestProcessor                       │
+└──────────────────┬───────────────────┬──────────────────┘
+                   │                   │
+          ┌────────▼────────┐ ┌────────▼────────┐
+          │  DatabasePort   │ │  StoragePort    │
+          │    (Trait)      │ │    (Trait)      │
+          └────────┬────────┘ └────────┬────────┘
+                   │                   │
+     ┌─────────────▼───────────────────▼─────────────┐
+     │         Infrastructure Layer                   │
+     │     (Adapters / External Services)             │
+     │    DynamoDbAdapter    S3Adapter                │
+     └────────────────────────────────────────────────┘
+```
+
+### Layers
+
+1. **Domain Layer** (`src/domain/`)
+   - `models.rs`: Core data structures (RequestPayload, ResponsePayload)
+   - `ports.rs`: Trait definitions for external dependencies (DatabasePort, StoragePort)
+   - `mocks.rs`: Mock implementations for testing (test-only)
+
+2. **Application Layer** (`src/application/`)
+   - `service.rs`: Business logic (RequestProcessor)
+   - Uses ports to interact with external services
+   - Independent of infrastructure details
+
+3. **Infrastructure Layer** (`src/infrastructure/`)
+   - `dynamo.rs`: DynamoDB adapter implementing DatabasePort
+   - `s3.rs`: S3 adapter implementing StoragePort
+   - Concrete implementations of domain ports
+
+4. **Main** (`src/main.rs`)
+   - Dependency injection and wiring
+   - Lambda runtime setup
+   - HTTP request/response handling
+
+### Benefits
+
+- **Testability**: Easy to test with mock implementations
+- **Flexibility**: Can swap implementations without changing business logic
+- **Independence**: Business logic doesn't depend on AWS SDK
+- **SOLID Principles**: Dependency Inversion, Single Responsibility
+
 ## Project Structure
 
 ```
-mk-sample-rust-lambda/
-├── Cargo.toml          # Rust dependencies and configuration
+mk-test-lambda/
+├── Cargo.toml                  # Rust dependencies
 ├── src/
-│   └── main.rs         # Main Lambda handler
-├── README.md           # This file
+│   ├── domain/                 # Domain layer
+│   │   ├── mod.rs
+│   │   ├── models.rs           # Core data structures
+│   │   ├── ports.rs            # Port traits
+│   │   └── mocks.rs            # Test mocks
+│   ├── application/            # Application layer
+│   │   ├── mod.rs
+│   │   └── service.rs          # Business logic
+│   ├── infrastructure/         # Infrastructure layer
+│   │   ├── mod.rs
+│   │   ├── dynamo.rs           # DynamoDB adapter
+│   │   └── s3.rs               # S3 adapter
+│   ├── lib.rs
+│   └── main.rs                 # Entry point & DI wiring
+├── tests/
+│   └── integration_test.rs     # Integration tests
 └── .cargo/
-    └── config.toml     # Cargo configuration for cross-compilation
+    └── config.toml             # Cross-compilation config
 ```
 
 ## API
@@ -92,9 +158,38 @@ The function can be configured with the following environment variables:
 
 ## Testing
 
-Run tests with:
+The project includes comprehensive tests:
+
+### Unit Tests
 ```bash
+# Run all tests
 cargo test
+
+# Run only library tests (unit tests)
+cargo test --lib
+
+# Run specific test module
+cargo test domain::mocks
+cargo test application::service
+```
+
+### Test Coverage
+
+- **Domain Layer**: Mock implementations with unit tests
+- **Application Layer**: Business logic tests using mocks (5 test cases)
+- **Integration Tests**: Lambda handler integration tests (2 test cases)
+
+**Total: 10 tests** (8 unit + 2 integration)
+
+### Test Structure
+
+```rust
+// Example: Testing with mocks
+use crate::domain::mocks::{MockDatabase, MockStorage};
+
+let db = Box::new(MockDatabase::new());
+let storage = Box::new(MockStorage::new());
+let processor = RequestProcessor::new(db, storage);
 ```
 
 ## Performance

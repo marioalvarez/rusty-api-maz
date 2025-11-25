@@ -1,4 +1,4 @@
-use lambda_http::{Body, Request};
+use lambda_http::{Body, Request, http};
 use serde_json::json;
 
 #[tokio::test]
@@ -13,7 +13,7 @@ async fn test_lambda_handler() {
         }
     });
 
-    let request = Request::builder()
+    let request = http::Request::builder()
         .method("POST")
         .uri("/test")
         .header("Content-Type", "application/json")
@@ -30,7 +30,7 @@ async fn test_lambda_handler() {
 
 #[tokio::test]
 async fn test_empty_request() {
-    let request = Request::builder()
+    let request = http::Request::builder()
         .method("GET")
         .uri("/test")
         .body(Body::Empty)
