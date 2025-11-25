@@ -21,6 +21,7 @@ aws-config = "1.5"
 aws-sdk-dynamodb = "1.56"
 aws-sdk-s3 = "1.63"
 aws-sdk-ses = "1.51"
+async-trait = "0.1.89"
 
 [dev-dependencies]
 tokio-test = "0.4"
