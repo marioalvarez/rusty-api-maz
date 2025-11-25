@@ -1,26 +1,12 @@
 use lambda_http::{run, service_fn, Body, Error, Request, RequestExt, Response};
-use serde::{Deserialize, Serialize};
-use std::collections::HashMap;
+use mk_test_lambda::application::service::RequestProcessor;
+use mk_test_lambda::domain::models::{RequestPayload, ResponsePayload};
+use mk_test_lambda::infrastructure::dynamo::DynamoDbAdapter;
+use mk_test_lambda::infrastructure::s3::S3Adapter;
+use aws_config::meta::region::RegionProviderChain;
+use aws_sdk_dynamodb::Client as DynamoClient;
+use aws_sdk_s3::Client as S3Client;
 use tracing::{info, error};
-
-mod services;
-use services::AwsServices;
-
-/// Request payload structure
-#[derive(Deserialize)]
-struct RequestPayload {
-    message: Option<String>,
-    data: Option<HashMap<String, serde_json::Value>>,
-}
-
-/// Response payload structure
-#[derive(Serialize)]
-struct ResponsePayload {
-    status: String,
-    message: String,
-    data: Option<HashMap<String, serde_json::Value>>,
-    timestamp: String,
-}
 
 /// Main Lambda handler function
 async fn function_handler(event: Request) -> Result<Response<Body>, Error> {
@@ -48,74 +34,66 @@ async fn function_handler(event: Request) -> Result<Response<Body>, Error> {
         }
     };
 
+    // Initialize AWS configuration
+    let region_provider = RegionProviderChain::default_provider().or_else("us-east-1");
+    let config = aws_config::from_env().region(region_provider).load().await;
+
+    // Initialize Infrastructure Adapters
+    let dynamo_client = DynamoClient::new(&config);
+    let s3_client = S3Client::new(&config);
+
+    let database_adapter = Box::new(DynamoDbAdapter::new(dynamo_client));
+    let storage_adapter = Box::new(S3Adapter::new(s3_client));
+
+    // Initialize Application Service
+    let processor = RequestProcessor::new(database_adapter, storage_adapter);
+
     // Process the request
-    let response = process_request(request_payload, query_params, path_params).await;
-
-    // Create response
-    let response_payload = ResponsePayload {
-        status: "success".to_string(),
-        message: response,
-        data: None,
-        timestamp: chrono::Utc::now().to_rfc3339(),
-    };
-
-    let response_body = serde_json::to_string(&response_payload)
-        .map_err(|e| Error::from(format!("Failed to serialize response: {}", e)))?;
-
-    Ok(Response::builder()
-        .status(200)
-        .header("Content-Type", "application/json")
-        .header("Access-Control-Allow-Origin", "*")
-        .header("Access-Control-Allow-Methods", "GET, POST, PUT, DELETE, OPTIONS")
-        .header("Access-Control-Allow-Headers", "Content-Type, Authorization")
-        .body(Body::Text(response_body))
-        .map_err(|e| Error::from(format!("Failed to build response: {}", e)))?)
-}
-
-/// Process the incoming request
-async fn process_request(
-    payload: Option<RequestPayload>,
-    query_params: &HashMap<String, String>,
-    path_params: &HashMap<String, String>,
-) -> String {
-    info!("Processing request with payload: {:?}", payload);
-    info!("Query parameters: {:?}", query_params);
-    info!("Path parameters: {:?}", path_params);
-
-    // Example business logic
-    let message = match payload {
-        Some(p) => p.message.unwrap_or_else(|| "No message provided".to_string()),
-        None => "No payload provided".to_string(),
-    };
-
-    // Initialize AWS services (in a real application, you might want to cache this)
-    let aws_services = match AwsServices::new().await {
-        Ok(services) => {
-            info!("AWS services initialized successfully");
-            Some(services)
-        }
-        Err(e) => {
-            error!("Failed to initialize AWS services: {}", e);
-            None
-        }
-    };
-
-    // Example: Use AWS services if available
-    if let Some(services) = aws_services {
-        // Example: You could interact with DynamoDB or S3 here
-        info!("AWS services are available for use");
-        
-        // Example DynamoDB operation (commented out to avoid actual AWS calls in demo)
-        // let result = services.get_dynamo_item("your-table", HashMap::new()).await;
-        // info!("DynamoDB result: {:?}", result);
+    // Note: query_params and path_params need to be converted to HashMap<String, String>
+    // The lambda_http types are effectively maps, but we need to convert them to standard HashMaps for our port
+    // For simplicity in this demo, we'll just pass empty maps or convert if needed.
+    // The RequestProcessor signature expects &HashMap<String, String>.
+    // lambda_http::aws_lambda_events::query_map::QueryMap is iterable.
+    
+    let mut q_params = std::collections::HashMap::new();
+    for (k, v) in query_params.iter() {
+        q_params.insert(k.to_string(), v.to_string());
     }
 
-    // Simulate some processing
-    tokio::time::sleep(tokio::time::Duration::from_millis(100)).await;
+    let mut p_params = std::collections::HashMap::new();
+    for (k, v) in path_params.iter() {
+        p_params.insert(k.to_string(), v.to_string());
+    }
 
-    format!("Hello from Rust Lambda! Received message: {}. AWS services: {}", 
-            message, 
-            if aws_services.is_some() { "available" } else { "unavailable" })
+    let result = processor.process_request(request_payload, &q_params, &p_params).await;
+
+    match result {
+        Ok(message) => {
+            // Create response
+            let response_payload = ResponsePayload {
+                status: "success".to_string(),
+                message,
+                data: None,
+                timestamp: chrono::Utc::now().to_rfc3339(),
+            };
+
+            let response_body = serde_json::to_string(&response_payload)
+                .map_err(|e| Error::from(format!("Failed to serialize response: {}", e)))?;
+
+            Ok(Response::builder()
+                .status(200)
+                .header("Content-Type", "application/json")
+                .header("Access-Control-Allow-Origin", "*")
+                .header("Access-Control-Allow-Methods", "GET, POST, PUT, DELETE, OPTIONS")
+                .header("Access-Control-Allow-Headers", "Content-Type, Authorization")
+                .body(Body::Text(response_body))
+                .map_err(|e| Error::from(format!("Failed to build response: {}", e)))?)
+        }
+        Err(e) => {
+            error!("Processing failed: {}", e);
+            Ok(create_error_response(&format!("Processing failed: {}", e)))
+        }
+    }
 }
 
 /// Create an error response
