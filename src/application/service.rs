@@ -34,25 +34,46 @@ impl RequestProcessor {
         // This demonstrates port usage for database operations
         let table_name = std::env::var("DYNAMO_TABLE").unwrap_or_else(|_| "demo-table".to_string());
         let mut key = HashMap::new();
-        key.insert("id".to_string(), "demo-key".to_string());
+        key.insert("order_id".to_string(), "1111".to_string());
+        key.insert("segment".to_string(), "10".to_string());
         
-        match self.database.get_item(&table_name, key).await {
-            Ok(Some(_)) => tracing::info!("Found item in DynamoDB"),
-            Ok(None) => tracing::info!("Item not found in DynamoDB"),
-            Err(e) => tracing::warn!("DynamoDB error (expected in demo): {}", e),
-        }
+        let dynamo_info = match self.database.get_item(&table_name, key).await {
+            Ok(Some(item)) => {
+                tracing::info!("Found item in DynamoDB: {:?}", item);
+                let item_json = serde_json::to_string_pretty(&item).unwrap_or_else(|_| format!("{:?}", item));
+                format!("DynamoDB Item Found:\n{}", item_json)
+            },
+            Ok(None) => {
+                tracing::info!("Item not found in DynamoDB");
+                "DynamoDB: Item not found".to_string()
+            },
+            Err(e) => {
+                tracing::warn!("DynamoDB error (expected in demo): {}", e);
+                format!("DynamoDB Error: {}", e)
+            }
+        };
 
         // Example S3 operation - Check if object exists
         // This demonstrates port usage for storage operations
         let bucket = std::env::var("S3_BUCKET").unwrap_or_else(|_| "demo-bucket".to_string());
         let key = "demo-object.txt";
         
-        match self.storage.get_object(&bucket, key).await {
-            Ok(_) => tracing::info!("Found object in S3"),
-            Err(e) => tracing::warn!("S3 error (expected in demo): {}", e),
-        }
+        let s3_info = match self.storage.get_object(&bucket, key).await {
+            Ok(data) => {
+                let content = String::from_utf8_lossy(&data);
+                tracing::info!("Found object in S3, size: {} bytes", data.len());
+                format!("S3 Object Found ({})\nContent:\n{}", key, content)
+            },
+            Err(e) => {
+                tracing::warn!("S3 error (expected in demo): {}", e);
+                format!("S3 Error: {}", e)
+            }
+        };
 
-        Ok(format!("Hello from Rust Lambda! Received message: {}. Database and storage services invoked successfully.", message))
+        Ok(format!(
+            "Hello from Rust Lambda! Received message: {}\n\n--- AWS Services Info ---\n\n{}\n\n{}\n\nDatabase and storage services invoked successfully.",
+            message, dynamo_info, s3_info
+        ))
     }
 }
 

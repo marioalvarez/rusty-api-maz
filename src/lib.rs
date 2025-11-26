@@ -1,6 +1,7 @@
-//! MiMarket Rust Lambda Library
+//! Rusty API MAZ - Rust Lambda Library
 //! 
-//! This library provides the core functionality for the MiMarket Rust Lambda functions.
+//! Author: malvarezz
+//! This library provides the core functionality for Rust Lambda functions.
 
 pub mod domain;
 pub mod infrastructure;

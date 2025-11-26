@@ -2,7 +2,7 @@
 name = "rusty-api-maz"
 version = "0.1.0"
 edition = "2021"
-authors = ["MiMarket Team"]
+authors = ["malvarezz"]
 description = "Rust Lambda API with Hexagonal Architecture - Production ready"
 
 [dependencies]

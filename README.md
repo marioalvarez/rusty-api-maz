@@ -2,6 +2,8 @@
 
 AWS Lambda API written in Rust with Hexagonal Architecture (Ports & Adapters) - Production ready.
 
+**Author:** malvarezz
+
 ## Overview
 
 This Lambda function demonstrates how to create a Rust-based AWS Lambda with:

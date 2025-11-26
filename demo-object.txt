@@ -1,0 +1,9 @@
+Hello from Rust Lambda!
+
+This is a demo file to test S3 operations.
+
+Timestamp: 2025-11-25
+Author: malvarezz
+Project: rusty-api-maz
+
+This file can be uploaded to S3 to test the get_object and put_object operations.

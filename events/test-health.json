@@ -1,0 +1,34 @@
+{
+  "version": "2.0",
+  "routeKey": "GET /",
+  "rawPath": "/",
+  "rawQueryString": "health=true",
+  "headers": {
+    "accept": "application/json",
+    "host": "localhost:9000",
+    "user-agent": "cargo-lambda/test"
+  },
+  "queryStringParameters": {
+    "health": "true"
+  },
+  "requestContext": {
+    "accountId": "123456789012",
+    "apiId": "test-api",
+    "domainName": "localhost:9000",
+    "domainPrefix": "localhost",
+    "http": {
+      "method": "GET",
+      "path": "/",
+      "protocol": "HTTP/1.1",
+      "sourceIp": "127.0.0.1",
+      "userAgent": "cargo-lambda/test"
+    },
+    "requestId": "health-check-id",
+    "routeKey": "GET /",
+    "stage": "$default",
+    "time": "25/Nov/2025:00:00:00 +0000",
+    "timeEpoch": 1732492800000
+  },
+  "body": "",
+  "isBase64Encoded": false
+}

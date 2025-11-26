@@ -1,0 +1,32 @@
+{
+  "version": "2.0",
+  "routeKey": "POST /",
+  "rawPath": "/",
+  "rawQueryString": "",
+  "headers": {
+    "accept": "application/json",
+    "content-type": "application/json",
+    "host": "localhost:9000",
+    "user-agent": "cargo-lambda/test"
+  },
+  "requestContext": {
+    "accountId": "123456789012",
+    "apiId": "test-api",
+    "domainName": "localhost:9000",
+    "domainPrefix": "localhost",
+    "http": {
+      "method": "POST",
+      "path": "/",
+      "protocol": "HTTP/1.1",
+      "sourceIp": "127.0.0.1",
+      "userAgent": "cargo-lambda/test"
+    },
+    "requestId": "test-request-id",
+    "routeKey": "POST /",
+    "stage": "$default",
+    "time": "25/Nov/2025:00:00:00 +0000",
+    "timeEpoch": 1732492800000
+  },
+  "body": "{\"message\":\"Test desde Lambda - Verificando operaciones de DynamoDB y S3\",\"data\":{\"test_type\":\"full\",\"author\":\"malvarezz\"}}",
+  "isBase64Encoded": false
+}
