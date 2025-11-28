@@ -1,0 +1,77 @@
+# Cargo Lambda Configuration
+# https://www.cargo-lambda.info/guide/configuration.html
+
+[build]
+# Output format: Binary or Zip
+output_format = "zip"
+
+# Build for ARM64 (Graviton processors - better price/performance)
+# Set to false if you need x86_64
+arm64 = true
+
+# Include additional files in the deployment package
+include = ["README.md"]
+
+[deploy]
+# Memory allocation (MB) - adjust based on your needs
+memory = 256
+
+# Timeout in seconds
+timeout = 30
+
+# Enable X-Ray tracing
+tracing = "Active"
+
+# Log retention in days
+log_retention = 7
+
+# Environment variables for the Lambda function
+# Uncomment and customize as needed
+# [deploy.env_var]
+# RUST_LOG = "info"
+# APP_ENV = "production"
+
+[deploy.remote_config]
+# AWS region - customize for your deployment
+region = "us-east-1"
+
+# Uncomment to use a specific AWS profile
+# profile = "my-aws-profile"
+
+# Uncomment to set a retry count for failed operations
+# retry_attempts = 3
+
+[watch]
+# Port for local testing
+invoke_port = 9000
+
+# Enable CORS for local development
+# disable_cors = false
+
+# Print OpenTelemetry traces after each invocation
+print_traces = true
+
+# Development context for different environments
+[dev.deploy]
+memory = 128
+timeout = 15
+tracing = "Active"
+
+[dev.deploy.remote_config]
+region = "us-east-1"
+
+[staging.deploy]
+memory = 256
+timeout = 30
+tracing = "Active"
+
+[staging.deploy.remote_config]
+region = "us-east-1"
+
+[production.deploy]
+memory = 512
+timeout = 60
+tracing = "Active"
+
+[production.deploy.remote_config]
+region = "us-east-1"

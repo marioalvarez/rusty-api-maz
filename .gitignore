@@ -17,6 +17,8 @@ Thumbs.db
 # Lambda deployment artifacts
 bootstrap
 *.zip
+/dist/
+lambda/
 
 # Environment files
 .env
@@ -25,3 +27,6 @@ bootstrap
 
 # Logs
 *.log
+
+# AWS deployment files (optional - uncomment if you don't want to track these)
+# CargoLambda.toml

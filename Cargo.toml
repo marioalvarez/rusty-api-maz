@@ -6,8 +6,8 @@ authors = ["malvarezz"]
 description = "Rust Lambda API with Hexagonal Architecture - Production ready"
 
 [dependencies]
-lambda_runtime = "0.13"
-lambda_http = "0.13"
+lambda_runtime = { version = "0.13", features = ["tracing"] }
+lambda_http = { version = "0.13", features = ["tracing"] }
 serde = { version = "1.0", features = ["derive"] }
 serde_json = "1.0"
 tokio = { version = "1.0", features = ["full"] }
@@ -33,3 +33,11 @@ path = "src/main.rs"
 [lib]
 name = "mk_test_lambda"
 path = "src/lib.rs"
+
+# Optimizations for AWS Lambda
+[profile.release]
+opt-level = "z"      # Optimize for size (smaller binary = faster cold starts)
+lto = true            # Enable Link Time Optimization
+codegen-units = 1     # Better optimization (slower compile, smaller binary)
+strip = true          # Strip symbols from binary
+panic = "abort"       # Reduce binary size by not including unwinding code
