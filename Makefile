@@ -1,6 +1,6 @@
 # Makefile for Rust Lambda deployment with cargo-lambda
 
-.PHONY: help build build-arm build-x86 build-zip test test-unit test-integration clean deploy deploy-dev deploy-staging deploy-prod local invoke invoke-complete invoke-health invoke-no-payload invoke-aws invoke-http local-verbose install check check-deps format lint logs
+.PHONY: help build build-arm build-x86 build-zip build-zip-x86 test test-unit test-integration clean deploy deploy-dev deploy-staging deploy-prod local invoke invoke-complete invoke-health invoke-no-payload invoke-aws invoke-http local-verbose install check check-deps format lint logs
 
 # Default target
 help:
@@ -10,7 +10,8 @@ help:
 	@echo "  build           - Build for ARM64 (default, recommended)"
 	@echo "  build-arm       - Build for ARM64 (Graviton processors)"
 	@echo "  build-x86       - Build for x86_64"
-	@echo "  build-zip       - Build and package as ZIP"
+	@echo "  build-zip       - Build and package ARM64 as ZIP in dist/"
+	@echo "  build-zip-x86   - Build and package x86_64 as ZIP in dist/"
 	@echo ""
 	@echo "Deployment Commands:"
 	@echo "  deploy          - Deploy to AWS Lambda (dev context)"
@@ -54,10 +55,23 @@ build-x86:
 	@echo "🔨 Building for x86_64..."
 	cargo lambda build --release --x86-64
 
-# Build and package as ZIP
+# Build and package as ZIP (ARM64)
 build-zip:
-	@echo "📦 Building and packaging as ZIP..."
+	@echo "📦 Building and packaging as ZIP (ARM64)..."
 	cargo lambda build --release --arm64 --output-format zip
+	@mkdir -p dist
+	@cp target/lambda/bootstrap/bootstrap.zip dist/lambda-arm64.zip
+	@echo "✅ ZIP created: dist/lambda-arm64.zip"
+	@ls -lh dist/lambda-arm64.zip
+
+# Build and package as ZIP (x86_64)
+build-zip-x86:
+	@echo "📦 Building and packaging as ZIP (x86_64)..."
+	cargo lambda build --release --x86-64 --output-format zip
+	@mkdir -p dist
+	@cp target/lambda/bootstrap/bootstrap.zip dist/lambda-x86_64.zip
+	@echo "✅ ZIP created: dist/lambda-x86_64.zip"
+	@ls -lh dist/lambda-x86_64.zip
 
 # Run all tests
 test:

@@ -53,8 +53,9 @@ make build
 # Or build for x86_64
 make build-x86
 
-# Build and package as ZIP
-make build-zip
+# Build and package as ZIP (generates in dist/ folder)
+make build-zip        # ARM64 -> dist/lambda-arm64.zip
+make build-zip-x86    # x86_64 -> dist/lambda-x86_64.zip
 ```
 
 ### Test locally
@@ -395,12 +396,18 @@ Enabled by default in all environments for:
 
 Run `make help` to see all available commands:
 
-**Build**: `build`, `build-arm`, `build-x86`, `build-zip`  
+**Build**: `build`, `build-arm`, `build-x86`, `build-zip`, `build-zip-x86`  
 **Deploy**: `deploy-dev`, `deploy-staging`, `deploy-prod`  
 **Test**: `test`, `test-unit`, `test-integration`  
 **Local**: `local`, `invoke`, `invoke-complete`, `invoke-health`, `invoke-no-payload`, `invoke-aws`, `invoke-http`  
 **Quality**: `check`, `format`, `lint`, `check-deps`  
 **Utility**: `clean`, `install`, `logs`
+
+### Deployment Packages
+
+ZIPs for manual deployment are generated in the `dist/` folder:
+- `dist/lambda-arm64.zip` - ARM64/Graviton build (recommended)
+- `dist/lambda-x86_64.zip` - x86_64 build
 
 ## Cargo Lambda Configuration
 
